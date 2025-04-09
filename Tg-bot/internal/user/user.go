@@ -1,8 +1,13 @@
 package user
 
-import "link-tracker/internal/bot"
+import (
+	"sync"
+)
 
-var Users = make(map[int64]User)
+var (
+	Users = make(map[int64]User)
+	mu    sync.Mutex
+)
 
 const (
 	NONE = iota
@@ -24,8 +29,8 @@ type User struct {
 }
 
 func GetState(chatId int64) int {
-	bot.mu.Lock()
+	mu.Lock()
 	userState := Users[chatId].State
-	bot.mu.Unlock()
+	mu.Unlock()
 	return userState
 }
