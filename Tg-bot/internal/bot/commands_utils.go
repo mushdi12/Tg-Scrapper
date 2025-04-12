@@ -2,6 +2,7 @@ package bot
 
 import (
 	"fmt"
+	. "link-tracker/internal/network/http"
 	. "link-tracker/internal/user"
 	"strings"
 	"sync"
@@ -103,6 +104,7 @@ func CheckLogin(bot *TgBot, chatId int64) {
 	mu.Lock()
 	if _, ok := Users[chatId]; !ok {
 		Users[chatId] = User{State: NONE}
+		SendRequest() // <-----
 		bot.SendMessage(chatId, "Вы успешно зарегистрировались!")
 	} else {
 		bot.SendMessage(chatId, "Пользователь уже зарегистрирован!")
