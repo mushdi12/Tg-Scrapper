@@ -1,12 +1,12 @@
 package main
 
 import (
-	. "Server-Scrapper/internal/db/postgres"
-	. "Server-Scrapper/internal/server"
 	"errors"
 	"log"
 	"log/slog"
 	"net/http"
+	. "server-scrapper/internal/database/postgres"
+	. "server-scrapper/internal/server"
 )
 
 func main() {

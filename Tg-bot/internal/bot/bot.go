@@ -2,11 +2,11 @@ package bot
 
 import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	"link-tracker/internal/fileManager"
 	"log"
 	"os"
 	"os/signal"
 	"sync"
+	"tg-bot/internal/fileManager"
 )
 
 type Bot interface {
@@ -85,12 +85,8 @@ func (bot *TgBot) SendMessage(chatId int64, message string) {
 
 func (bot *TgBot) Stop() {
 	log.Println("Выключение бота...")
-
 	bot.StopReceivingUpdates()
-
 	close(bot.stopChan)
-
 	bot.wg.Wait()
-
 	log.Println("Бот успешно остановлен.")
 }

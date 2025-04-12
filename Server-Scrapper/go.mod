@@ -1,4 +1,4 @@
-module Server-Scrapper
+module server-scrapper
 
 go 1.24
 

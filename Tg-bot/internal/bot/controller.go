@@ -2,7 +2,7 @@ package bot
 
 import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	"link-tracker/internal/user"
+	"tg-bot/internal/user"
 )
 
 func Controller(updates tgbotapi.UpdatesChannel, bot *TgBot, stopChan <-chan struct{}) {
@@ -17,11 +17,12 @@ func Controller(updates tgbotapi.UpdatesChannel, bot *TgBot, stopChan <-chan str
 				continue
 			}
 
+			user := update.Message.From
 			chatID := update.Message.Chat.ID
 
 			if update.Message.IsCommand() {
 				command := update.Message.Command()
-				handleCommand(command, chatID, bot)
+				handleCommand(user.UserName, command, chatID, bot)
 			} else {
 				message := update.Message.Text
 				handleMessage(message, chatID, bot)
@@ -33,9 +34,9 @@ func Controller(updates tgbotapi.UpdatesChannel, bot *TgBot, stopChan <-chan str
 	}
 }
 
-func handleCommand(cmd string, chatID int64, bot *TgBot) {
+func handleCommand(username string, cmd string, chatID int64, bot *TgBot) {
 	if command, exists := CommandRegistry[cmd]; exists {
-		command.Execute(chatID, bot)
+		command.Execute(username, chatID, bot)
 	} else {
 		bot.SendMessage(chatID, "Неизвестная команда! Используй /help")
 	}

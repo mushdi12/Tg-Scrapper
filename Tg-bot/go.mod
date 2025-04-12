@@ -1,4 +1,4 @@
-module link-tracker
+module tg-bot
 
 go 1.24.0
 

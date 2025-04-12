@@ -5,22 +5,17 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"time"
+	dto "tg-bot/pkg/dto"
 )
 
-var client = http.Client{Timeout: 3 * time.Second}
+//var client = http.Client{Timeout: 3 * time.Second}
 
-type user struct {
-	ChatID   int64  `json:"chatID"`
-	Username string `json:"username"`
-}
-
-func SendRequest() {
+func SendRequest(chatId int64, username string) {
 	done := make(chan<- interface{})
 	go func() {
-		user := user{
-			ChatID:   123456789,
-			Username: "new_user",
+		user := dto.Client{
+			ChatId:   chatId,
+			UserName: username,
 		}
 
 		userData, err := json.Marshal(user)

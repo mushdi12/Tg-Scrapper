@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/labstack/echo/v4"
 	"net/http"
+	dto "server-scrapper/pkg/dto"
 )
 
 func RemoveLink(c echo.Context) error {
@@ -18,27 +19,17 @@ func AddLink(c echo.Context) error {
 	return err
 }
 
-type user struct {
-	ChatID   int64  `json:"chatID"`
-	Username string `json:"username"`
-	RegDate  string `json:"reg_date"`
-}
-
 func AddUser(c echo.Context) error {
-	var user user
+	var client dto.Client
 
-	// Применяем Bind, чтобы распарсить тело запроса в структуру user
-	if err := c.Bind(&user); err != nil {
-		// Если ошибка при парсинге, возвращаем ошибку
+	if err := c.Bind(&client); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{
 			"error": "Invalid input",
 		})
 	}
 
-	// Выводим полученные данные на сервер
-	fmt.Printf("User received: %+v\n", user)
+	fmt.Printf("User received: %+v\n", client)
 
-	// Возвращаем успешный ответ
 	return c.JSON(http.StatusOK, map[string]string{
 		"message": "User added successfully",
 	})

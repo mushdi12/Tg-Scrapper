@@ -1,9 +1,9 @@
 package postgres
 
 import (
-	. "Server-Scrapper/internal/fileManager"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	. "server-scrapper/internal/fileManager"
 )
 
 var DB *gorm.DB
