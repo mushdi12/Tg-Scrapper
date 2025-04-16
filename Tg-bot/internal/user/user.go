@@ -5,16 +5,8 @@ import (
 )
 
 var (
-	Users = make(map[int64]User)
+	Users = make(map[int64]*User)
 	mu    sync.Mutex
-)
-
-const (
-	NONE = iota
-	WaitingUrl
-	WaitingFilter
-	WaitingHashtag
-	WaitingUrlForRemove
 )
 
 type UserInterface interface {
@@ -22,6 +14,7 @@ type UserInterface interface {
 }
 
 type User struct {
+	ChatId   int64
 	State    int
 	Link     string
 	Filter   string

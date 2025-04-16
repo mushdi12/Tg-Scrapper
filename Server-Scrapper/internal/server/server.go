@@ -16,8 +16,9 @@ func NewServer() *Server {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover()) // для восстановления из паники
 
-	e.POST("users", AddUser)
-	e.POST("user/addlink", AddLink)
-	e.DELETE("user/removelink", RemoveLink)
+	e.POST("user/addUser", AddUser)
+	e.POST("user/addLink", AddLink)
+	e.GET("user/getLinks", GetLinks)
+	e.DELETE("user/removeLink", RemoveLink)
 	return &Server{e}
 }

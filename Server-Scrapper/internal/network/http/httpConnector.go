@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"github.com/labstack/echo/v4"
 	"net/http"
-	dto "server-scrapper/pkg/dto"
+	dbclient "server-scrapper/internal/database/postgres"
+	"server-scrapper/pkg/dto"
 )
 
 func RemoveLink(c echo.Context) error {
@@ -14,13 +15,28 @@ func RemoveLink(c echo.Context) error {
 }
 
 func AddLink(c echo.Context) error {
-	var err error
+	var userLink dto.UsersLinks
 
-	return err
+	if err := c.Bind(&userLink); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"error": "Invalid input",
+		})
+	}
+
+	// Запускаем сохранение в отдельной горутине
+	go func() {
+		if err := dbclient.SaveClientLink(userLink); err != nil {
+			fmt.Printf("Error saving client: %v\n", err)
+		}
+	}()
+
+	return c.JSON(http.StatusOK, map[string]string{
+		"message": "User add initiated",
+	})
 }
 
 func AddUser(c echo.Context) error {
-	var client dto.Client
+	var client dto.User
 
 	if err := c.Bind(&client); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{
@@ -28,9 +44,35 @@ func AddUser(c echo.Context) error {
 		})
 	}
 
-	fmt.Printf("User received: %+v\n", client)
+	// Запускаем сохранение в отдельной горутине
+	go func() {
+		if err := dbclient.SaveClient(client); err != nil {
+			fmt.Printf("Error saving client: %v\n", err)
+		}
+	}()
 
 	return c.JSON(http.StatusOK, map[string]string{
-		"message": "User added successfully",
+		"message": "User add initiated",
+	})
+}
+
+func GetLinks(c echo.Context) error {
+	var userLink dto.UsersLinks
+
+	if err := c.Bind(&userLink); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"error": "Invalid input",
+		})
+	}
+
+	// Запускаем сохранение в отдельной горутине
+	go func() {
+		if err := dbclient.SaveClientLink(userLink); err != nil {
+			fmt.Printf("Error saving client: %v\n", err)
+		}
+	}()
+
+	return c.JSON(http.StatusOK, map[string]string{
+		"message": "User add initiated",
 	})
 }

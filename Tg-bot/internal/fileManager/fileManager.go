@@ -12,8 +12,9 @@ type BotCommand struct {
 }
 
 type Config struct {
-	Token    string       `json:"token"`
-	Commands []BotCommand `json:"commands"`
+	Token     string       `json:"token"`
+	Commands  []BotCommand `json:"commands"`
+	ServerURL string       `json:"server_url"`
 }
 
 func LoadConfig(filePath string) (*Config, error) {
@@ -34,10 +35,7 @@ func LoadConfig(filePath string) (*Config, error) {
 func CommandConverter(commands []BotCommand) ([]tgbotapi.BotCommand, error) {
 	var botCommands []tgbotapi.BotCommand
 	for _, cmd := range commands {
-		botCommands = append(botCommands, tgbotapi.BotCommand{
-			Command:     cmd.Command,
-			Description: cmd.Description,
-		})
+		botCommands = append(botCommands, tgbotapi.BotCommand{Command: cmd.Command, Description: cmd.Description})
 	}
 	return botCommands, nil
 }

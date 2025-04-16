@@ -7,7 +7,11 @@ import (
 	"os/signal"
 	"sync"
 	"tg-bot/internal/fileManager"
+	"tg-bot/internal/network"
+	"tg-bot/pkg/async"
 )
+
+var tgBot *TgBot
 
 type Bot interface {
 	Start()
@@ -20,7 +24,6 @@ type TgBot struct {
 	wg       sync.WaitGroup
 }
 
-// TgBot constructor
 func NewTgBot(filePath string) *TgBot {
 	config, err := fileManager.LoadConfig(filePath)
 	if err != nil {
@@ -47,25 +50,25 @@ func NewTgBot(filePath string) *TgBot {
 		return nil
 	}
 
-	log.Println("Created new bot")
+	network.ServerURL = config.ServerURL
 
-	return &TgBot{BotAPI: bot}
+	log.Println("The config was uploaded successfully")
+
+	tgBot.BotAPI = bot
+
+	return tgBot
 }
 
 func (bot *TgBot) Start() {
+	log.Println("The bot has been successfully launched...")
 
-	log.Println("Starting Telegram Bot")
 	bot.stopChan = make(chan struct{})
 
 	u := tgbotapi.NewUpdate(0)
 	u.Timeout = 60
 	updates := bot.GetUpdatesChan(u)
 
-	bot.wg.Add(1)
-	go func() {
-		defer bot.wg.Done()
-		Controller(updates, bot, bot.stopChan)
-	}()
+	async.RunAsync(func() { MainController(updates, bot, bot.stopChan) })
 
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, os.Interrupt)
@@ -84,9 +87,17 @@ func (bot *TgBot) SendMessage(chatId int64, message string) {
 }
 
 func (bot *TgBot) Stop() {
-	log.Println("Выключение бота...")
+	log.Println("The bot is shutting down its work...")
 	bot.StopReceivingUpdates()
 	close(bot.stopChan)
 	bot.wg.Wait()
-	log.Println("Бот успешно остановлен.")
+	log.Println("The bot was successfully stopped!")
+}
+
+func GetBotCommand() ([]tgbotapi.BotCommand, error) {
+	commands, err := tgBot.GetMyCommands()
+	if err != nil {
+		return nil, err
+	}
+	return commands, nil
 }
