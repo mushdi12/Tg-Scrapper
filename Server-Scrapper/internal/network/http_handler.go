@@ -1,21 +1,19 @@
-package http
+package network
 
 import (
 	"fmt"
 	"github.com/labstack/echo/v4"
 	"net/http"
-	dbclient "server-scrapper/internal/database/postgres"
-	"server-scrapper/pkg/dto"
 )
 
-func RemoveLink(c echo.Context) error {
+func RemoveLinkHandler(c echo.Context) error {
 	var err error
 	// принимаем данные
 	return err
 }
 
-func AddLink(c echo.Context) error {
-	var userLink dto.UsersLinks
+func AddLinkHandler(c echo.Context) error {
+	var userLink Client
 
 	if err := c.Bind(&userLink); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{
@@ -25,7 +23,7 @@ func AddLink(c echo.Context) error {
 
 	// Запускаем сохранение в отдельной горутине
 	go func() {
-		if err := dbclient.SaveClientLink(userLink); err != nil {
+		if err := SaveClientLink(userLink); err != nil {
 			fmt.Printf("Error saving client: %v\n", err)
 		}
 	}()
@@ -35,8 +33,8 @@ func AddLink(c echo.Context) error {
 	})
 }
 
-func AddUser(c echo.Context) error {
-	var client dto.User
+func AddUserHandler(c echo.Context) error {
+	var client Client
 
 	if err := c.Bind(&client); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{
@@ -46,7 +44,7 @@ func AddUser(c echo.Context) error {
 
 	// Запускаем сохранение в отдельной горутине
 	go func() {
-		if err := dbclient.SaveClient(client); err != nil {
+		if err := SaveClient(client); err != nil {
 			fmt.Printf("Error saving client: %v\n", err)
 		}
 	}()
@@ -56,8 +54,8 @@ func AddUser(c echo.Context) error {
 	})
 }
 
-func GetLinks(c echo.Context) error {
-	var userLink dto.UsersLinks
+func GetLinksHandler(c echo.Context) error {
+	var userLink Client
 
 	if err := c.Bind(&userLink); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{
@@ -67,7 +65,7 @@ func GetLinks(c echo.Context) error {
 
 	// Запускаем сохранение в отдельной горутине
 	go func() {
-		if err := dbclient.SaveClientLink(userLink); err != nil {
+		if err := SaveClientLink(userLink); err != nil {
 			fmt.Printf("Error saving client: %v\n", err)
 		}
 	}()

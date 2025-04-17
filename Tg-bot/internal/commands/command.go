@@ -1,6 +1,7 @@
 package commands
 
 import (
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"reflect"
 	. "tg-bot/internal/user"
 )
@@ -16,7 +17,8 @@ var CommandRegistry = map[string]Command{
 type CommandContext struct {
 	ChatId   int64
 	Username string
-	Message  string // для Track/Untrack
+	Message  string
+	BotCmd   []tgbotapi.BotCommand
 }
 
 type Command interface {

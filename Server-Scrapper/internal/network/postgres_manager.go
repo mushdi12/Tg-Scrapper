@@ -1,11 +1,10 @@
-package postgres
+package network
 
 import (
 	"fmt"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	. "server-scrapper/internal/fileManager"
-	"server-scrapper/pkg/dto"
 )
 
 var DB *gorm.DB
@@ -20,14 +19,14 @@ func Connect(filePath string) error {
 	return nil
 }
 
-func SaveClient(client dto.User) error {
+func SaveClient(client Client) error {
 	if DB == nil {
 		return fmt.Errorf("database not initialized")
 	}
 	return DB.Create(&client).Error
 }
 
-func SaveClientLink(usersLink dto.UsersLinks) error {
+func SaveClientLink(usersLink Client) error {
 	if DB == nil {
 		return fmt.Errorf("database not initialized")
 	}

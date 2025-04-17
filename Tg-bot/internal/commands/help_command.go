@@ -2,17 +2,14 @@ package commands
 
 import (
 	"fmt"
-	"log"
 	"strings"
-	"tg-bot/internal/bot"
 )
 
 type HelpCommand struct{}
 
-func (cmd *HelpCommand) Execute(_ CommandContext) string {
-	commands, err := bot.GetBotCommand()
-	if err != nil {
-		log.Printf("[HelpCommand] ошибка получения списка команд: %v", err)
+func (cmd *HelpCommand) Execute(ctx CommandContext) string {
+	commands := ctx.BotCmd
+	if commands != nil {
 		return "Произошла ошибка, попробуйте еще раз!"
 	}
 

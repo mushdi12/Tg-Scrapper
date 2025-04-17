@@ -8,7 +8,6 @@ import (
 	"sync"
 	"tg-bot/internal/fileManager"
 	"tg-bot/internal/network"
-	"tg-bot/pkg/async"
 )
 
 var tgBot *TgBot
@@ -25,29 +24,32 @@ type TgBot struct {
 }
 
 func NewTgBot(filePath string) *TgBot {
+
+	tgBot := &TgBot{}
+
 	config, err := fileManager.LoadConfig(filePath)
 	if err != nil {
-		log.Fatal(err)
-		return nil
+		log.Fatal("<<internal/bot/NewTgBot>> Failed to load config: ", err)
 	}
 
 	bot, err := tgbotapi.NewBotAPI(config.Token)
 	if err != nil {
-		log.Fatal(err)
-		return nil
+		log.Fatal("<<internal/bot/NewTgBot>> Telegram token is empty")
 	}
 
 	botCommands, err := fileManager.CommandConverter(config.Commands)
 	if err != nil {
-		log.Fatal(err)
-		return nil
+		log.Fatal("<<internal/bot/NewTgBot>> Failed to convert commands: ", err)
 	}
 
 	setCommands := tgbotapi.NewSetMyCommands(botCommands...)
 	_, err = bot.Request(setCommands)
 	if err != nil {
-		log.Fatal(err)
-		return nil
+		log.Fatal("<<internal/bot/NewTgBot>> Failed to set commands: ", err)
+	}
+
+	if config.ServerURL == "" {
+		log.Fatal("<<internal/bot/NewTgBot>> Server URL is empty")
 	}
 
 	network.ServerURL = config.ServerURL
@@ -68,7 +70,7 @@ func (bot *TgBot) Start() {
 	u.Timeout = 60
 	updates := bot.GetUpdatesChan(u)
 
-	async.RunAsync(func() { MainController(updates, bot, bot.stopChan) })
+	go MainController(updates, bot, bot.stopChan)
 
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, os.Interrupt)
@@ -94,10 +96,10 @@ func (bot *TgBot) Stop() {
 	log.Println("The bot was successfully stopped!")
 }
 
-func GetBotCommand() ([]tgbotapi.BotCommand, error) {
+func GetBotCommand() []tgbotapi.BotCommand {
 	commands, err := tgBot.GetMyCommands()
 	if err != nil {
-		return nil, err
+		return nil
 	}
-	return commands, nil
+	return commands
 }

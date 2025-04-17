@@ -3,9 +3,9 @@ package bot
 import (
 	"context"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	"tg-bot/internal/bot/commands"
+	"log"
+	commands2 "tg-bot/internal/commands"
 	user "tg-bot/internal/user"
-	"tg-bot/pkg/async"
 	"time"
 )
 
@@ -34,12 +34,23 @@ func MainController(updates tgbotapi.UpdatesChannel, bot *TgBot, stopChan <-chan
 func handleCommand(username string, cmd string, chatID int64, bot *TgBot) {
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
-	if command, exists := commands.CommandRegistry[cmd]; exists {
+	if command, exists := commands2.CommandRegistry[cmd]; exists {
 
+		commandCtx := commands2.CommandContext{ChatId: chatID, Username: username}
 		messageForUser := make(chan string)
 
+		if cmd == "help" {
+			botCmds, err := bot.GetMyCommands()
+			if err != nil {
+				log.Println(err.Error())
+				commandCtx.BotCmd = nil
+			} else {
+				commandCtx.BotCmd = botCmds
+			}
+		}
+
 		go func() {
-			//msg := command.Execute(chatID, username)
+			msg := command.Execute(commandCtx)
 			messageForUser <- msg
 		}()
 
@@ -56,11 +67,32 @@ func handleCommand(username string, cmd string, chatID int64, bot *TgBot) {
 }
 
 func handleMessage(message string, chatID int64, bot *TgBot) {
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
 	state := user.GetState(chatID)
-	if _, exists := user.AddStates[state]; exists {
-		async.RunAsync(func() { RealizationTrack(bot, chatID, state, message) })
-	} else if _, exists := user.RemoveStates[state]; exists {
-		async.RunAsync(func() { RealizationUnTrack(bot, chatID, state, message) })
+	_, addFlag := user.AddStates[state]
+	_, removeFlag := user.AddStates[state]
+
+	if addFlag || removeFlag {
+		messageForUser := make(chan string)
+		var command commands2.Command
+		if addFlag {
+			command = &commands2.TrackCommand{}
+		} else {
+			command = &commands2.UnTrackCommand{}
+		}
+		go func() {
+			msg := command.Execute(commands2.CommandContext{ChatId: chatID, Message: message})
+			messageForUser <- msg
+		}()
+
+		select {
+		case msg := <-messageForUser:
+			bot.SendMessage(chatID, msg)
+		case <-ctx.Done():
+			bot.SendMessage(chatID, "Команда заняла слишком много времени, попробуйте еще раз!")
+		}
+
 	} else {
 		bot.SendMessage(chatID, "Неизвестная команда! Воспользуйтесь /help")
 	}

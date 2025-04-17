@@ -5,7 +5,7 @@ import (
 	"log"
 	"log/slog"
 	"net/http"
-	. "server-scrapper/internal/database/postgres"
+	. "server-scrapper/internal/network"
 	. "server-scrapper/internal/server"
 )
 
