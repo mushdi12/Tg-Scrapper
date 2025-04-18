@@ -5,7 +5,7 @@ type Client struct {
 	UserName string `json:"username" gorm:"column:username"`
 }
 
-type AddLink struct {
+type ClientLink struct {
 	ChatId   int64  `json:"chat_id"`
 	Link     string `json:"link" gorm:"column:irl"`
 	Category string `json:"category"`

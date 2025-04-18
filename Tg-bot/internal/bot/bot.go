@@ -1,6 +1,7 @@
 package bot
 
 import (
+	"fmt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"log"
 	"os"
@@ -9,8 +10,6 @@ import (
 	"tg-bot/internal/fileManager"
 	"tg-bot/internal/network"
 )
-
-var tgBot *TgBot
 
 type Bot interface {
 	Start()
@@ -96,10 +95,11 @@ func (bot *TgBot) Stop() {
 	log.Println("The bot was successfully stopped!")
 }
 
-func GetBotCommand() []tgbotapi.BotCommand {
-	commands, err := tgBot.GetMyCommands()
+func (bot *TgBot) GetBotCommand() ([]tgbotapi.BotCommand, error) {
+	fmt.Println("GetBotCommand")
+	commands, err := bot.GetMyCommands()
 	if err != nil {
-		return nil
+		return nil, err
 	}
-	return commands
+	return commands, nil
 }

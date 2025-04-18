@@ -21,12 +21,9 @@ func AddLinkHandler(c echo.Context) error {
 		})
 	}
 
-	// Запускаем сохранение в отдельной горутине
-	go func() {
-		if err := SaveClientLink(userLink); err != nil {
-			fmt.Printf("Error saving client: %v\n", err)
-		}
-	}()
+	if err := SaveClientLink(userLink); err != nil {
+		fmt.Printf("Error saving client: %v\n", err)
+	}
 
 	return c.JSON(http.StatusOK, map[string]string{
 		"message": "User add initiated",
@@ -42,12 +39,9 @@ func AddUserHandler(c echo.Context) error {
 		})
 	}
 
-	// Запускаем сохранение в отдельной горутине
-	go func() {
-		if err := SaveClient(client); err != nil {
-			fmt.Printf("Error saving client: %v\n", err)
-		}
-	}()
+	if err := SaveClient(client); err != nil {
+		fmt.Printf("Error saving client: %v\n", err)
+	}
 
 	return c.JSON(http.StatusOK, map[string]string{
 		"message": "User add initiated",
@@ -64,11 +58,10 @@ func GetLinksHandler(c echo.Context) error {
 	}
 
 	// Запускаем сохранение в отдельной горутине
-	go func() {
-		if err := SaveClientLink(userLink); err != nil {
-			fmt.Printf("Error saving client: %v\n", err)
-		}
-	}()
+
+	if err := SaveClientLink(userLink); err != nil {
+		fmt.Printf("Error saving client: %v\n", err)
+	}
 
 	return c.JSON(http.StatusOK, map[string]string{
 		"message": "User add initiated",

@@ -23,7 +23,17 @@ type User struct {
 
 func GetState(chatId int64) int {
 	mu.Lock()
-	userState := Users[chatId].State
-	mu.Unlock()
-	return userState
+	defer mu.Unlock()
+	user, exist := Users[chatId]
+	if !exist {
+		return 0
+	}
+	return user.State
+}
+
+func ResetState(chatId int64) {
+	mu.Lock()
+	defer mu.Unlock()
+	user, _ := Users[chatId]
+	user.State = NONE
 }

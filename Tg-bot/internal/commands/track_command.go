@@ -15,10 +15,16 @@ func (cmd *TrackCommand) Execute(ctx CommandContext) string {
 	user, ok := Users[ctx.ChatId]
 	if !ok {
 		log.Printf("[TrackCommand.Execute] пользователь не найден в Users")
-		return "Сначала введите /start"
+		return "Сначала зарегистрируйтесь -> /start"
 	}
 
 	state := user.State
+
+	if ctx.Message == "" && state != NONE {
+		ResetState(ctx.ChatId)
+		return "Ошибка! Действие Команды отменено"
+	}
+
 	stmf := AddStates[state]
 
 	if stmf.FieldtoChange != "" {

@@ -1,7 +1,8 @@
 package user
 
 const (
-	NONE = iota
+	ERROR = iota
+	NONE  = iota
 	WaitingUrl
 	WaitingFilter
 	WaitingHashtag

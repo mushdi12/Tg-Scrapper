@@ -16,7 +16,7 @@ func (cmd *StartCommand) Execute(ctx CommandContext) string {
 	defer mu.Unlock()
 
 	if _, ok := Users[ctx.ChatId]; !ok {
-		Users[ctx.ChatId] = &User{ChatId: ctx.ChatId}
+		Users[ctx.ChatId] = &User{ChatId: ctx.ChatId, State: NONE}
 		err := network.AddUserRequest(ctx.ChatId, ctx.Username)
 		if err != nil {
 			log.Printf("[StartCommand] ошибка при регистрации: %v", err)

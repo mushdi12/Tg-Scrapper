@@ -9,7 +9,7 @@ type HelpCommand struct{}
 
 func (cmd *HelpCommand) Execute(ctx CommandContext) string {
 	commands := ctx.BotCmd
-	if commands != nil {
+	if commands == nil {
 		return "Произошла ошибка, попробуйте еще раз!"
 	}
 

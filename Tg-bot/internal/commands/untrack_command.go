@@ -15,11 +15,22 @@ func (cmd *UnTrackCommand) Execute(ctx CommandContext) string {
 	user, ok := Users[ctx.ChatId]
 	if !ok {
 		log.Printf("[UnTrackCommand.Execute] пользователь не найден в Users")
-		return "Сначала введите /start"
+		return "Сначала зарегистрируйтесь -> /start"
 	}
 
 	state := user.State
+
+	if ctx.Message == "" && state != NONE {
+		ResetState(ctx.ChatId)
+		return "Ошибка! Действие Команды отменено"
+	}
+
 	stmf := RemoveStates[state]
+
+	//if state > ERROR {
+	//	ResetState(ctx.ChatId)
+	//	return "Нельзя пользоваться командами во время других команд! Действие команды отменено!"
+	//}
 
 	if stmf.FieldtoChange != "" {
 		setUserField(user, stmf.FieldtoChange, ctx.Message)
